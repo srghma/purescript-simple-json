@@ -51,7 +51,7 @@ import Foreign.Object (Object)
 import Foreign.Object as Object
 import Partial.Unsafe (unsafeCrashWith)
 import Prim.Row as Row
-import Prim.RowList (class RowToList, Cons, Nil, kind RowList)
+import Prim.RowList (class RowToList, Cons, Nil, RowList)
 import Record (get)
 import Record.Builder (Builder)
 import Record.Builder as Builder
@@ -203,7 +203,7 @@ instance readRecord ::
       fieldListP = RLProxy :: RLProxy fieldList
 
 -- | A class for reading foreign values from properties
-class ReadForeignFields (xs :: RowList) (from :: # Type) (to :: # Type)
+class ReadForeignFields (xs :: RowList Type) (from :: Row Type) (to :: Row Type)
   | xs -> from to where
   getFields :: RLProxy xs
     -> Foreign
@@ -249,7 +249,7 @@ instance readForeignVariant ::
   ) => ReadForeign (Variant variants) where
   readImpl o = readVariantImpl (RLProxy :: RLProxy rl) o
 
-class ReadForeignVariant (xs :: RowList) (row :: # Type)
+class ReadForeignVariant (xs :: RowList Type) (row :: Row Type)
   | xs -> row where
   readVariantImpl :: RLProxy xs
     -> Foreign
@@ -322,7 +322,7 @@ instance recordWriteForeign ::
       rlp = RLProxy :: RLProxy rl
       steps = writeImplFields rlp rec
 
-class WriteForeignFields (rl :: RowList) row (from :: # Type) (to :: # Type)
+class WriteForeignFields (rl :: RowList Type) row (from :: Row Type) (to :: Row Type)
   | rl -> row from to where
   writeImplFields :: forall g. g rl -> Record row -> Builder (Record from) (Record to)
 
@@ -351,7 +351,7 @@ instance writeForeignVariant ::
   ) => WriteForeign (Variant row) where
   writeImpl variant = writeVariantImpl (RLProxy :: RLProxy rl) variant
 
-class WriteForeignVariant (rl :: RowList) (row :: # Type)
+class WriteForeignVariant (rl :: RowList Type) (row :: Row Type)
   | rl -> row where
   writeVariantImpl :: forall g. g rl -> Variant row -> Foreign
 
